@@ -1,0 +1,4 @@
+**/bin/
+**/obj/
+**/*.csproj.user
+**/appsettings.local.json

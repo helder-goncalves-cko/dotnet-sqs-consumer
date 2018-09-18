@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    ports:
+      - "5342:5341"
+      - "8000:80"
+    environment:
+      - ACCEPT_EULA=Y
+
+  sqs:
+    image: roribio16/alpine-sqs:latest
+    container_name: sqs
+    ports:
+      - "9324:9324"
+      - "9325:9325"
+    stdin_open: true
+    tty: true
+
+  consumer:
+    build:
+      context: .
+      dockerfile: ./src/Consumer/Dockerfile
+    depends_on:
+        - sqs
+    container_name: consumer
+    environment:
+      - AWS_ACCESS_KEY_ID=XX
+      - AWS_SECRET_ACCESS_KEY=XX
+      - Consumer_Settings:Endpoint=http://sqs:4576
+      - Consumer_Settings:QueueUrl=http://sqs:4576/queue/default
+      - Consumer_Settings:VisibilityTimeout=3
+      - Consumer_Serilog:WriteTo:0:Args:restrictedToMinimumLevel=Information
+      - Consumer_Serilog:WriteTo:1:Args:serverUrl=http://seq:5341
+      - Consumer_Serilog:WriteTo:1:Args:apiKey=xxx
