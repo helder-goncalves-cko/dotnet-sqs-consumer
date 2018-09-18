@@ -2,18 +2,16 @@
 using System.IO;
 using System.Runtime.Loader;
 using System.Threading;
-using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
-using Proto;
 using Serilog;
 using Consumer.Actors;
 using StructureMap;
-using Queueing.Configuration;
 using Shared;
 using Consumer.Dependencies;
 using Queueing.Dependencies;
 using Consumer.Messages;
 using Consumer.Factories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Consumer
 {
@@ -38,10 +36,13 @@ namespace Consumer
                 _logger.Information("Starting Consumer. Press Ctrl+C to exit.");
                 _logger.Debug(_configuration.Dump());
 
+                var services = new ServiceCollection().AddHttpClient();
+
                 var container = new Container(config =>
                 {
                     config.AddRegistry(new AppRegistry(_configuration, _logger));
                     config.AddRegistry(new QueueingRegistry(_configuration));
+                    config.Populate(services);
                 });
 
 #if DEBUG
@@ -62,15 +63,6 @@ namespace Consumer
             {
                 Serilog.Log.CloseAndFlush();
             }
-        }
-
-        Serilog.ILogger ConfigureLogger()
-        {
-            var logger = new LoggerConfiguration()
-                .WriteTo.ColoredConsole()
-                .CreateLogger();
-
-            return Serilog.Log.Logger = logger;
         }
 
         static void OnShutdown(AssemblyLoadContext context)
@@ -98,7 +90,7 @@ namespace Consumer
         /// </summary>
         /// <param name="configuration">The configuration to read from</param>
         /// <returns>An logger instance</returns>
-        static Serilog.ILogger CreateLogger()
+        static ILogger CreateLogger()
         {
             var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(_configuration)
@@ -120,16 +112,6 @@ namespace Consumer
                 .AddJsonFile("appsettings.local.json", optional: true)
                 .AddEnvironmentVariables(prefix: "Consumer_")
                 .Build();
-        }
-
-        private static IAmazonSQS CreateAmazonSQSClient(QueueSettings settings)
-        {
-            if (string.IsNullOrWhiteSpace(settings.Endpoint))
-                return new AmazonSQSClient();
-
-            // localstack usage
-            var config = new AmazonSQSConfig { ServiceURL = settings.Endpoint };
-            return new AmazonSQSClient(config);
         }
     }
 }

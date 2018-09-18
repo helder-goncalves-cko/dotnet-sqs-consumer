@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Consumer.Factories;
 using Microsoft.Extensions.Configuration;
 using Serilog;
