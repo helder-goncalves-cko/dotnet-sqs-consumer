@@ -3,6 +3,7 @@
 This template consists of a Console application designed to consume messages pushed to an [SQS](https://aws.amazon.com/sqs/) queue.
 
 The application is built using [Proto.Actor](https://github.com/AsynkronIT/protoactor-dotnet) for super fast processing :)
+
 It also logs to Serilog and has both Console and [Seq](http://getseq.net) sinks configured.
 
 
