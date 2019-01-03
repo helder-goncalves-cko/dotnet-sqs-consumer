@@ -1,0 +1,6 @@
+pipeline:
+
+  build:
+    image: microsoft/dotnet:2.1-sdk-alpine
+    commands:
+      - dotnet build ./src/Consumer/Consumer.csproj
