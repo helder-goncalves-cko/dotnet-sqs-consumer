@@ -17,7 +17,7 @@ namespace Producer
             var fixture = new Fixture();
 
             fixture.Customize<WebhookCommand>(w =>
-                w.With(x => x.Url, "http://requestbin.fullcontact.com/y1ca4ky1")
+                w.With(x => x.Url, configuration["WebhookUrl"])
                 .Without(x => x.ReceiptHandle));
 
             ForSingletonOf<IFixture>()

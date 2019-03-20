@@ -51,3 +51,4 @@ services:
       - Producer_Serilog:WriteTo:0:Args:restrictedToMinimumLevel=Information
       - Producer_Serilog:WriteTo:1:Args:serverUrl=http://seq:5341
       - Producer_Serilog:WriteTo:1:Args:apiKey=xxx
+      - Producer_WebhookUrl=http://requestbin.fullcontact.com/1k3ajvy1
