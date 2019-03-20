@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Shared;
 
-namespace Consumer.Dependencies
+namespace Consumer
 {
     public class AppRegistry : BaseAppRegistry
     {

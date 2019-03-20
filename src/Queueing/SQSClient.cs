@@ -90,26 +90,35 @@ namespace Queueing
             if (commands == null)
                 throw new ArgumentNullException(nameof(commands));
 
-            var entries = commands.Select(command => new SendMessageBatchRequestEntry
+            IEnumerable<string> successful = null, failed = null;
+
+            try
             {
-                Id = command.CommandId.ToString(),
-                MessageBody = JsonConvert.SerializeObject(command),
-                MessageAttributes = new Dictionary<string, MessageAttributeValue>
+                var entries = commands.Select(command => new SendMessageBatchRequestEntry
                 {
+                    Id = command.CommandId.ToString(),
+                    MessageBody = JsonConvert.SerializeObject(command, new JsonSerializerSettings{ NullValueHandling = NullValueHandling.Ignore}),
+                    MessageAttributes = new Dictionary<string, MessageAttributeValue>
                     {
-                        MessageType,
-                        new MessageAttributeValue
                         {
-                            StringValue = command.GetType().FullName,
-                            DataType = nameof(String)
+                            MessageType,
+                            new MessageAttributeValue
+                            {
+                                StringValue = command.GetType().FullName,
+                                DataType = nameof(String)
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            var response = await _client.SendMessageBatchAsync(_settings.QueueUrl, entries.ToList(), cancellationToken);
-            var successful = response?.Successful.Select(x => x.Id) ?? new List<string>();
-            var failed = response?.Failed.Select(x => x.Id) ?? commands.Select(x => x.CommandId.ToString());
+                var response = await _client.SendMessageBatchAsync(_settings.QueueUrl, entries.ToList(), cancellationToken);
+                successful = response?.Successful.Select(x => x.Id) ?? new List<string>();
+                failed = response?.Failed.Select(x => x.Id) ?? commands.Select(x => x.CommandId.ToString());
+            }
+            catch (Exception ex)
+            {
+            }
+
             return (successful.ToList(), failed.ToList());
         }
     }

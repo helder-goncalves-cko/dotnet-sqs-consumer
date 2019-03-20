@@ -4,15 +4,14 @@ using System.Runtime.Loader;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using Consumer.Actors;
 using StructureMap;
 using Shared;
 using Queueing.Dependencies;
-using Consumer.Messages;
-using Consumer.Factories;
 using Microsoft.Extensions.DependencyInjection;
+using Producer.Actors;
+using Producer.Messages;
 
-namespace Consumer
+namespace Producer
 {
     class Program
     {
@@ -32,7 +31,7 @@ namespace Consumer
 
             try
             {
-                _logger.Information("Starting Consumer. Press Ctrl+C to exit.");
+                _logger.Information("Starting Producer. Press Ctrl+C to exit.");
                 _logger.Debug(_configuration.Dump());
 
                 var services = new ServiceCollection().AddHttpClient();
@@ -48,15 +47,15 @@ namespace Consumer
                 container.AssertConfigurationIsValid();
 #endif
 
-                var actorFactory = container.GetInstance<ISQSCommandActorFactory>();
-                var dequeuer = actorFactory.GetActor<Dequeuer>();
-                dequeuer.Tell(new ReceiveCommands());
+                var actorFactory = container.GetInstance<IActorFactory>();
+                var dequeuer = actorFactory.GetActor<Enqueuer>();
+                dequeuer.Tell(new SendCommands());
 
                 _closing.WaitOne();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error starting Consumer.");
+                _logger.Error(ex, "Error starting Producer.");
             }
             finally
             {
@@ -66,7 +65,7 @@ namespace Consumer
 
         static void OnShutdown(AssemblyLoadContext context)
         {
-            _logger.Information("Shutting down Consumer");
+            _logger.Information("Shutting down Producer");
             _cancellationToken.Cancel();
             Serilog.Log.CloseAndFlush();
         }
@@ -109,7 +108,7 @@ namespace Consumer
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
-                .AddEnvironmentVariables(prefix: "Consumer_")
+                .AddEnvironmentVariables(prefix: "Producer_")
                 .Build();
         }
     }

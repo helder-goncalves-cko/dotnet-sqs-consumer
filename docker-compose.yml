@@ -35,3 +35,19 @@ services:
       - Consumer_Serilog:WriteTo:0:Args:restrictedToMinimumLevel=Information
       - Consumer_Serilog:WriteTo:1:Args:serverUrl=http://seq:5341
       - Consumer_Serilog:WriteTo:1:Args:apiKey=xxx
+
+  producer:
+    build:
+      context: .
+      dockerfile: ./src/Producer/Dockerfile
+    depends_on:
+        - sqs
+    container_name: producer
+    environment:
+      - AWS_ACCESS_KEY_ID=XX
+      - AWS_SECRET_ACCESS_KEY=XX
+      - Producer_Settings:Endpoint=http://sqs:4576
+      - Producer_Settings:QueueUrl=http://sqs:4576/queue/default
+      - Producer_Serilog:WriteTo:0:Args:restrictedToMinimumLevel=Information
+      - Producer_Serilog:WriteTo:1:Args:serverUrl=http://seq:5341
+      - Producer_Serilog:WriteTo:1:Args:apiKey=xxx
