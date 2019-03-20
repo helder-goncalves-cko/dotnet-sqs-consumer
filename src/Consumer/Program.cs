@@ -49,7 +49,7 @@ namespace Consumer
                 container.AssertConfigurationIsValid();
 #endif
 
-                var actorFactory = container.GetInstance<IActorFactory>();
+                var actorFactory = container.GetInstance<ISQSCommandActorFactory>();
                 var dequeuer = actorFactory.GetActor<Dequeuer>();
                 dequeuer.Tell(new ReceiveCommands());
 

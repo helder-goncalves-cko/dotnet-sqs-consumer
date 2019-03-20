@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using Proto;
 
-namespace Consumer.Dependencies
+namespace Shared
 {
     public class ActorPropsRegistry
     {
-        internal readonly Dictionary<Type, Func<Props, Props>> RegisteredProps = new Dictionary<Type, Func<Props, Props>>();
+        public readonly Dictionary<Type, Func<Props, Props>> RegisteredProps = new Dictionary<Type, Func<Props, Props>>();
 
-        internal ActorPropsRegistry()
+        public ActorPropsRegistry()
         {
         }
 

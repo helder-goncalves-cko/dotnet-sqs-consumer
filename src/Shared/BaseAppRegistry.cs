@@ -1,14 +1,12 @@
-using System.Net.Http;
-using Consumer.Factories;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using StructureMap;
 
-namespace Consumer.Dependencies
+namespace Shared
 {
-    public class AppRegistry : Registry
+    public class BaseAppRegistry : Registry
     {
-        public AppRegistry(IConfiguration configuration, ILogger logger)
+        public BaseAppRegistry(IConfiguration configuration, ILogger logger)
         {
             ForSingletonOf<IConfiguration>()
                 .Use(configuration);
@@ -16,14 +14,8 @@ namespace Consumer.Dependencies
             ForSingletonOf<ILogger>()
                 .Use(ctx => logger.ForContext(ctx.ParentType ?? ctx.RootType));
 
-            ForSingletonOf<IActorFactory>()
-                .Use<ActorFactory>();
-
             ForSingletonOf<ActorPropsRegistry>()
                 .Use(new ActorPropsRegistry());
-
-            ForSingletonOf<IMessageMapper>()
-                .Use<MessageMapper>();
         }
     }
 }

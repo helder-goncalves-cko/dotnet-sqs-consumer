@@ -13,13 +13,13 @@ namespace Consumer.Actors
     {
         private readonly ISQSClient _sqsClient;
         private readonly ILogger _logger;
-        private readonly IActorFactory _factory;
+        private readonly ISQSCommandActorFactory _factory;
         private readonly IMessageMapper _mapper;
 
         public Dequeuer(
             ISQSClient sqsClient,
             ILogger logger,
-            IActorFactory factory,
+            ISQSCommandActorFactory factory,
             IMessageMapper mapper)
         {
             _sqsClient = sqsClient ?? throw new ArgumentNullException(nameof(sqsClient));

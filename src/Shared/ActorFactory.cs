@@ -1,11 +1,9 @@
 using System;
-using Consumer.Actors;
-using Consumer.Dependencies;
 using Proto;
-using Queueing.Models;
+using Shared;
 using StructureMap;
 
-namespace Consumer.Factories
+namespace Shared
 {
     /// <summary>
     /// Modified implementation on https://github.com/AsynkronIT/protoactor-dotnet/blob/dev/src/Proto.Actor.Extensions/ActorFactory.cs to support StructureMap
@@ -74,17 +72,6 @@ namespace Consumer.Factories
             }
 
             return parent.SpawnNamed(props2, id);
-        }
-
-        public PID GetActor(ISQSCommand command)
-        {
-            switch (command)
-            {
-                case WebhookCommand webhook:
-                    return GetActor<Dispatcher>($"Dispatcher_{webhook.CommandId}");
-                default:
-                    throw new NotSupportedException($"{command.GetType()} is not supported");
-            }
         }
     }
 }

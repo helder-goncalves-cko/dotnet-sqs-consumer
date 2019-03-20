@@ -14,9 +14,9 @@ namespace Consumer.Actors
     {
         private readonly ILogger _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IActorFactory _actorFactory;
+        private readonly ISQSCommandActorFactory _actorFactory;
 
-        public Dispatcher(ILogger logger, IHttpClientFactory httpClientFactory, IActorFactory actorFactory)
+        public Dispatcher(ILogger logger, IHttpClientFactory httpClientFactory, ISQSCommandActorFactory actorFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
